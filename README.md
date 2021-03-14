@@ -1,5 +1,5 @@
-# guess-game-react
-Guessing the random 4 digit number with hints
+# crossword-puzzle-react
+Auto word placeable crossword puzzle board
 
 To try the example:
 
