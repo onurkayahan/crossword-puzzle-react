@@ -58,7 +58,6 @@ export default class GameBoard extends React.Component {
                     startY = y;
                     if (isVertical) startY = y - index; // if current word should write vertical align, we need to find start grid
                     if (!isVertical) startX = x - index; // it can be also horizontal align, but other align should be in grid's direction which we found
-                    console.log(word)
                     if (this.checkSlots(grid, startX, startY, word.length, grid[y][x])) { // if slots not available, searching for the next encounter
                         await this.setState({ x: startX, y: startY });
                         return;
@@ -66,6 +65,7 @@ export default class GameBoard extends React.Component {
                 }
             }
         }
+        console.warn(word, " kelimesi yazılamadı.");
         await this.setState({x: null, y: null})
     }
 
