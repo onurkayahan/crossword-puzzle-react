@@ -36,6 +36,7 @@ export default class GameBoard extends React.Component {
 
     insertWordToBoard = (word) => {
         let { grid, x, y, isVertical } = this.state;
+        if( !x || !y ) return;
         Object.values(word).forEach(letter => {
             isVertical ? grid[y++][x] = letter
                 : grid[y][x++] = letter;
@@ -57,6 +58,7 @@ export default class GameBoard extends React.Component {
                     startY = y;
                     if (isVertical) startY = y - index; // if current word should write vertical align, we need to find start grid
                     if (!isVertical) startX = x - index; // it can be also horizontal align, but other align should be in grid's direction which we found
+                    console.log(word)
                     if (this.checkSlots(grid, startX, startY, word.length, grid[y][x])) { // if slots not available, searching for the next encounter
                         await this.setState({ x: startX, y: startY });
                         return;
@@ -64,6 +66,7 @@ export default class GameBoard extends React.Component {
                 }
             }
         }
+        await this.setState({x: null, y: null})
     }
 
     // Check with start position and word length to find that word can write that grids or not
@@ -74,19 +77,30 @@ export default class GameBoard extends React.Component {
         if (isVertical) {
             for (let i = 0; i < wordLength; i++) {
                 if (grid[y + i][x] === letter) continue; // if we encounter with letter which was we searched, don't do anything. We can rewrite same letter on it 
-                if (grid[y + i][x] || y + i >= MAX_GRID_SIZE)
+                if (grid[y + i][x] || y + i >= MAX_GRID_SIZE || this.checkNeighbors(grid, x, y + i, letter)) {
                     return false;
+                }
 
             }
         } else {
             for (let i = 0; i < wordLength; i++) {
                 if (grid[y][x + i] === letter) continue; // if we encounter with letter which was we searched, don't do anything. We can rewrite same letter on it 
-                if (grid[y][x + i] || x + i >= MAX_GRID_SIZE)
+                if (grid[y][x + i] || x + i >= MAX_GRID_SIZE || this.checkNeighbors(grid, x + i, y, letter)) {
                     return false;
-
+                }
             }
         }
         return true;
+    }
+
+    checkNeighbors(grid, x, y, letter) {
+        if ((y - 1 >= 0 && grid[y - 1][x] && grid[y - 1][x] !== letter) ||
+            (x - 1 >= 0 && grid[y][x - 1] && grid[y][x - 1] !== letter) ||
+            (y + 1 < MAX_GRID_SIZE && grid[y + 1][x] && grid[y + 1][x] !== letter) ||
+            (x + 1 < MAX_GRID_SIZE && grid[y][x + 1] && grid[y][x + 1] !== letter)) {
+            return true;
+        }
+        else return false;
     }
 
     //Sorted means each of word has one or more same letter with previous word in array
